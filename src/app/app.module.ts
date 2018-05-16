@@ -11,6 +11,7 @@ import { BoxPlotComponent } from './box-plot/box-plot.component';
 import { SharedServiceService } from './shared-service.service';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CsvHelperService } from './csv-helper.service';
+import { ScoringService } from './scoring.service';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import { CsvHelperService } from './csv-helper.service';
   ],
   providers: [
     SharedServiceService,
-    CsvHelperService
+    CsvHelperService,
+    ScoringService
   ],
   bootstrap: [AppComponent]
 })

@@ -5,4 +5,7 @@
 <button (click)="OrderByMedian()">Sort by Average</button>
 <button (click)="OrderByMax()">Sort by Max</button>
 <button (click)="GetCSV()">GetCSV</button>
+<select (change)="AddPlayer($event.target.value)">
+    <option *ngFor="let player of _QbLib.QbList" [value]="player">{{player.Name}}</option>
+</select>
 

@@ -6,6 +6,9 @@ import { HttpClient } from '@angular/common/http';
 import { QbgameLog } from './qbgame-log';
 import { CsvHelperService } from './csv-helper.service';
 import { QbLibrary } from './qb-library';
+import { Scoring } from './scoring';
+import { ScoringService } from './scoring.service';
+import { Qb } from './qb';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +21,8 @@ export class AppComponent {
   constructor(
     private sharedService: SharedServiceService,
     private _http: HttpClient,
-    private csvHelperService: CsvHelperService
+    private csvHelperService: CsvHelperService,
+    private scoringService: ScoringService
   ) { }
 
   counter = 0;
@@ -39,6 +43,23 @@ export class AppComponent {
     { Border: '#bcbd22', Fill: '#dede91' },
     { Border: '#17becf', Fill: '#8bdfe7' }
   ];
+
+  scoring: Scoring = {
+    PaYa: 1,
+    PaYaInterval: 25,
+    Pa2Pt: 2,
+    PaInt: -2,
+    PaTD: 4,
+    RuYa: 1,
+    RuYaInterval: 10,
+    Ru2Pt: 2,
+    RuTD: 6,
+    ReYa: 1,
+    ReYaInterval: 10,
+    Re2Pt: 2,
+    ReTD: 6
+  }
+
   colorPosition = 2;
 
   AddPlot() {
@@ -68,6 +89,36 @@ export class AppComponent {
     this.componentPlots.push(traceTemp);
     this.sharedService.sharedPlots.emit(this.componentPlots);
     //console.log(this.componentPlots);
+  }
+
+  AddPlayer(qb: Qb) {
+    console.log('AddQB called');
+    console.log(qb);
+    this.counter++;
+    let scores: number[] = [];
+    for (let i = 0; i < qb.Games.length; i++) {
+      let score = this.scoringService.GetScore(this.scoring, qb.Games[i]);
+      scores.push(score);
+    }
+
+    const color = this.pickColor();
+    this.colorPosition++;
+
+    let traceTemp: Plotly.Data = {
+      y: scores,
+      type: 'box',
+      name: qb.Name,
+      marker: {
+        color: color.Border
+      },
+      boxpoints: 'all',
+      jitter: 0,
+      pointpos: 0,
+      boxmean: true
+    }
+
+    this.componentPlots.push(traceTemp);
+    this.sharedService.sharedPlots.emit(this.componentPlots);
   }
 
   getAvg(array: number[]) {
@@ -103,7 +154,7 @@ export class AppComponent {
   GetCSV() {
     console.log('GetCSV Called');
     this._QbLib.Initialize();
-    for(let i = 0; i < this._QbLib.QbList.length; i++){
+    for (let i = 0; i < this._QbLib.QbList.length; i++) {
       this._QbLib.QbList[i].Games = this.csvHelperService.GetQBFromCSV(this._QbLib.QbList[i].CsvGameString);
     }
 
@@ -125,5 +176,7 @@ export class AppComponent {
     );
     this.sharedService.sharedPlots.emit(this.componentPlots);
   }
+
+
 
 }
